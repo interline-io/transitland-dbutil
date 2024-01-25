@@ -8,6 +8,7 @@ require (
 	github.com/interline-io/log v0.0.0-20240123235933-c768586b868c
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/stretchr/testify v1.8.4
+	gopkg.in/dnaeon/go-vcr.v2 v2.3.0
 )
 
 require (
