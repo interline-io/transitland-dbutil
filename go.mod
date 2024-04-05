@@ -7,6 +7,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/interline-io/log v0.0.0-20240126000327-05bb90e4de4f
 	github.com/jmoiron/sqlx v1.3.5
+	github.com/lib/pq v1.2.0
 	github.com/stretchr/testify v1.8.4
 	gopkg.in/dnaeon/go-vcr.v2 v2.3.0
 )
