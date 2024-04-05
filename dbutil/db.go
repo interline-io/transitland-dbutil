@@ -125,23 +125,27 @@ func Update(ctx context.Context, db sqlx.Ext, q sq.UpdateBuilder) error {
 
 // Entity helpers
 
+type canBeginx interface {
+	Beginx() (*sqlx.Tx, error)
+}
+
 type hasTableName interface {
 	TableName() string
 }
 
-type hasID interface {
+type canSetID interface {
 	GetID() int
 	SetID(int)
 }
 
-type hasTimestamps interface {
+type canUpdateTimestamps interface {
 	UpdateTimestamps()
 }
 
 func FindEnt(ctx context.Context, db sqlx.Ext, ent any) error {
 	table := getTableName(ent)
 	entId := 0
-	if v, ok := ent.(hasID); ok {
+	if v, ok := ent.(canSetID); ok {
 		entId = v.GetID()
 	} else {
 		return errors.New("cannot get ID")
@@ -151,11 +155,11 @@ func FindEnt(ctx context.Context, db sqlx.Ext, ent any) error {
 }
 
 func UpdateEnt(ctx context.Context, db sqlx.Ext, ent any, columns []string) error {
-	if v, ok := ent.(hasTimestamps); ok {
+	if v, ok := ent.(canUpdateTimestamps); ok {
 		v.UpdateTimestamps()
 	}
 	entId := 0
-	if v, ok := ent.(hasID); ok {
+	if v, ok := ent.(canSetID); ok {
 		entId = v.GetID()
 	} else {
 		return errors.New("cannot get ID")
@@ -184,7 +188,7 @@ func UpdateEnt(ctx context.Context, db sqlx.Ext, ent any, columns []string) erro
 }
 
 func InsertEnt(ctx context.Context, db sqlx.Ext, ent any) (int, error) {
-	if v, ok := ent.(hasTimestamps); ok {
+	if v, ok := ent.(canUpdateTimestamps); ok {
 		v.UpdateTimestamps()
 	}
 	table := getTableName(ent)
@@ -236,7 +240,7 @@ func InsertEnt(ctx context.Context, db sqlx.Ext, ent any) (int, error) {
 	}
 
 	// Set ID
-	if v, ok := ent.(hasID); ok {
+	if v, ok := ent.(canSetID); ok {
 		v.SetID(int(eid.Int64))
 	}
 	return int(eid.Int64), err
