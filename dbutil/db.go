@@ -9,6 +9,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 
 	"github.com/interline-io/log"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/reflectx"
 )
@@ -23,7 +24,7 @@ func toSnakeCase(str string) string {
 }
 
 func OpenDB(url string) (*sqlx.DB, error) {
-	db, err := sqlx.Open("postgres", url)
+	db, err := sqlx.Open("pgx", url)
 	if err != nil {
 		log.Error().Err(err).Msg("could not open database")
 		return nil, err
