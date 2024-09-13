@@ -9,6 +9,8 @@ import (
 	sq "github.com/Masterminds/squirrel"
 
 	"github.com/interline-io/log"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/reflectx"
@@ -23,21 +25,26 @@ func toSnakeCase(str string) string {
 	return strings.ToLower(snake)
 }
 
-func OpenDB(url string) (*sqlx.DB, error) {
-	db, err := sqlx.Open("pgx", url)
+func OpenDBPool(url string) (*pgxpool.Pool, *sqlx.DB, error) {
+	pool, err := pgxpool.New(context.Background(), url)
 	if err != nil {
-		log.Error().Err(err).Msg("could not open database")
-		return nil, err
+		return nil, nil, err
 	}
+	db := sqlx.NewDb(stdlib.OpenDBFromPool(pool), "pgx")
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(10)
 	db.SetConnMaxLifetime(time.Hour)
 	if err := db.Ping(); err != nil {
 		log.Error().Err(err).Msgf("could not connect to database")
-		return nil, err
+		return nil, nil, err
 	}
 	db.Mapper = reflectx.NewMapperFunc("db", toSnakeCase)
-	return db.Unsafe(), nil
+	return pool, db.Unsafe(), nil
+}
+
+func OpenDB(url string) (*sqlx.DB, error) {
+	_, db, err := OpenDBPool(url)
+	return db, err
 }
 
 // Select runs a query and reads results into dest.
