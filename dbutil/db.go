@@ -43,8 +43,20 @@ func OpenDBPool(url string) (*pgxpool.Pool, *sqlx.DB, error) {
 }
 
 func OpenDB(url string) (*sqlx.DB, error) {
-	_, db, err := OpenDBPool(url)
-	return db, err
+	db, err := sqlx.Open("pgx", url)
+	if err != nil {
+		log.Error().Err(err).Msg("could not open database")
+		return nil, err
+	}
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(10)
+	db.SetConnMaxLifetime(time.Hour)
+	if err := db.Ping(); err != nil {
+		log.Error().Err(err).Msgf("could not connect to database")
+		return nil, err
+	}
+	db.Mapper = reflectx.NewMapperFunc("db", toSnakeCase)
+	return db.Unsafe(), nil
 }
 
 // Select runs a query and reads results into dest.
