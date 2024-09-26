@@ -25,8 +25,8 @@ func toSnakeCase(str string) string {
 	return strings.ToLower(snake)
 }
 
-func OpenDBPool(url string) (*pgxpool.Pool, *sqlx.DB, error) {
-	pool, err := pgxpool.New(context.Background(), url)
+func OpenDBPool(ctx context.Context, url string) (*pgxpool.Pool, *sqlx.DB, error) {
+	pool, err := pgxpool.New(ctx, url)
 	if err != nil {
 		return nil, nil, err
 	}
