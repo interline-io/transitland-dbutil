@@ -5,7 +5,7 @@ go 1.21.5
 require (
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/go-redis/redis/v8 v8.11.5
-	github.com/interline-io/log v0.0.0-20240613202707-4e3adcc06d2d
+	github.com/interline-io/log v0.0.0-20241212201508-b7e4cf59e452
 	github.com/jackc/pgx/v5 v5.7.0
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/stretchr/testify v1.8.4
